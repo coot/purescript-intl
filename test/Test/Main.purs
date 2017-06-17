@@ -5,9 +5,10 @@ import Prelude
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE)
 import Data.DateTime (Date, DateTime(..), Month(..), canonicalDate)
+import Data.Either (Either(..), isLeft)
 import Data.Enum (toEnum)
 import Data.Generic.Rep (class Generic)
-import Data.Intl.DateTimeFormat (DateTimeFormatOptions(..), DateTimeFormatOptions', HourMinute(HourMinute), HourMinuteSecond(HourMinuteSecond), LocalesOption, MonthDay(..), MonthRep(..), NumericRep(Numeric, TwoDigit), StringRep(..), TimeZone(TimeZone), WeekdayYearMonthDay(..), WeekdayYearMonthDayHourMinuteSecond(WeekdayYearMonthDayHourMinuteSecond), YearMonth(..), YearMonthDay(..), createDateTimeFormatter, formatJSDate)
+import Data.Intl.DateTimeFormat (DateTimeFormatOptions(..), DateTimeFormatOptions', HourMinute(HourMinute), HourMinuteSecond(HourMinuteSecond), LocalesOption, MonthDay(..), MonthRep(..), NumericRep(Numeric, TwoDigit), StringRep(..), TimeZone(TimeZone), WeekdayYearMonthDay(..), WeekdayYearMonthDayHourMinuteSecond(WeekdayYearMonthDayHourMinuteSecond), YearMonth(..), YearMonthDay(..), createDateTimeFormatter, formatJSDate, supportedLocalesOf)
 import Data.Intl.DateTimeFormat.Generic (class FormatComponent, genericFormatComponent)
 import Data.JSDate (JSDate, fromDateTime)
 import Data.Maybe (Maybe(..))
@@ -294,3 +295,9 @@ main = do
           fmtDate9Expected = "1 2, 2018 AD"
       assert' ("fmtEra: got '" <> fmtDate9 <> "' expected: '" <> fmtDate9Expected <> "'")
         $ fmtDate9 == fmtDate9Expected
+
+      let slocs = supportedLocalesOf ["en-US", "pl-PL"]
+      assert' ("supportedLocalesOf: got: " <> show slocs) $ slocs == Right ["en-US", "pl-PL"]
+
+      let err = supportedLocalesOf ["en_US"]
+      assert' ("supportedLocalesOf got: " <> show err) $ isLeft err

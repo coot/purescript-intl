@@ -19,10 +19,13 @@ module Data.Intl.DateTimeFormat
   , createDateTimeFormatter
   , formatJSDate
   , module Data.Intl.DateTimeFormat.Types
+  , supportedLocalesOf
   ) where
 
 import Data.Intl.DateTimeFormat.Types
 
+import Data.Either (Either(..))
+import Data.Function.Uncurried (Fn3, runFn3)
 import Data.Generic.Rep (class Generic)
 import Data.Intl.DateTimeFormat.Generic (class FormatComponent, defaultComponentRecord, formatComponent, genericFormatComponent)
 import Data.JSDate (JSDate)
@@ -286,3 +289,8 @@ createDateTimeFormatter
 createDateTimeFormatter ls opts = createDateTimeFormatterImpl (toLocale ls) (formatDateTimeOptions opts)
 
 foreign import formatJSDate :: DateTimeFormatter -> JSDate -> String
+
+foreign import supportedLocalesOfImpl :: Fn3 (String -> Either String (Array String)) (Array String -> Either String (Array String)) (Array String) (Either String (Array String))
+
+supportedLocalesOf :: Array String -> Either String (Array String)
+supportedLocalesOf locales = runFn3 supportedLocalesOfImpl Left Right locales

@@ -19,3 +19,11 @@ exports.formatJSDate = function(formatter) {
     return formatter.format(date)
   };
 };
+
+exports.supportedLocalesOfImpl = function(Left, Right, locales) {
+  try {
+    return Right(Intl.DateTimeFormat.supportedLocalesOf(locales))
+  } catch (e) {
+    return Left(e.message)
+  }
+}
