@@ -28,7 +28,7 @@ module Data.Intl.DateTimeFormat
 import Data.Intl.DateTimeFormat.Types
 
 import Data.Generic.Rep (class Generic)
-import Data.Intl.DateTimeFormat.Class (class FormatComponent, defaultComponentRecord, formatComponent, genericFormatComponent)
+import Data.Intl.DateTimeFormat.Generic (class FormatComponent, defaultComponentRecord, formatComponent, genericFormatComponent)
 import Data.JSDate (JSDate)
 import Data.Maybe (Maybe, fromMaybe, maybe)
 import Data.Newtype (class Newtype)

@@ -1,4 +1,14 @@
-module Data.Intl.DateTimeFormat.Class where
+module Data.Intl.DateTimeFormat.Generic
+  ( class FormatComponent
+  , formatComponent
+  , class GenericFormatComponent
+  , genericFormatComponent'
+  , genericFormatComponent
+  , class GenericFormatComponentFields
+  , genericFormatComponentFields
+  , defaultComponentRecord
+  , FormatComponentRecord
+  ) where
 
 import Data.Generic.Rep (class Generic, Constructor(Constructor), Field(..), NoConstructors, Product(..), Rec(..), from)
 import Data.Intl.DateTimeFormat.Types (MonthRep, NumericRep, TimeZoneNameRep, StringRep)
@@ -20,15 +30,15 @@ type FormatComponentRecord =
 
 defaultComponentRecord :: FormatComponentRecord
 defaultComponentRecord =
-  { era : Nothing
-  , weekday : Nothing
-  , year : Nothing
-  , month : Nothing
-  , day : Nothing
-  , hour : Nothing
-  , minute : Nothing
-  , second : Nothing
-  , timeZoneName : Nothing
+  { era: Nothing
+  , weekday: Nothing
+  , year: Nothing
+  , month: Nothing
+  , day: Nothing
+  , hour: Nothing
+  , minute: Nothing
+  , second: Nothing
+  , timeZoneName: Nothing
   }
 
 class FormatComponent a where
@@ -44,7 +54,17 @@ class GenericFormatComponentFields a where
   genericFormatComponentFields :: a -> StrMap String
 
 instance genericFormatComponentNoConsturctors :: GenericFormatComponent NoConstructors where
-  genericFormatComponent' a = { era: Nothing, weekday: Nothing, year: Nothing, month: Nothing, day: Nothing, hour: Nothing, minute: Nothing, second: Nothing, timeZoneName: Nothing }
+  genericFormatComponent' a =
+    { era: Nothing
+    , weekday: Nothing
+    , year: Nothing
+    , month: Nothing
+    , day: Nothing
+    , hour: Nothing
+    , minute: Nothing
+    , second: Nothing
+    , timeZoneName: Nothing
+    }
 
 instance genericFormatComponentConstructor :: (GenericFormatComponent a) => GenericFormatComponent (Constructor name a) where
   genericFormatComponent' (Constructor a) = genericFormatComponent' a
