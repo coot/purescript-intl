@@ -296,8 +296,8 @@ main = do
       assert' ("fmtEra: got '" <> fmtDate9 <> "' expected: '" <> fmtDate9Expected <> "'")
         $ fmtDate9 == fmtDate9Expected
 
-      let slocs = supportedLocalesOf ["en-US", "pl-PL"]
-      assert' ("supportedLocalesOf: got: " <> show slocs) $ slocs == Right ["en-US", "pl-PL"]
+      let slocs = supportedLocalesOf ["en-US", "jp-JP"]
+      assert' ("supportedLocalesOf: got: " <> show slocs) $ slocs == Right ["en-US"]
 
       let err = supportedLocalesOf ["en_US"]
       assert' ("supportedLocalesOf got: " <> show err) $ isLeft err
