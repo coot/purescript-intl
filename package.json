@@ -1,0 +1,31 @@
+{
+  "name": "purescript-intl",
+  "version": "0.1.0",
+  "description": "PureScript interface to Intl",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "pulp build",
+    "test": "pulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coot/purescript-intl.git"
+  },
+  "keywords": [
+    "Intl",
+    "internalisation",
+    "purescript"
+  ],
+  "author": "Marcin Szamotulski",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/coot/purescript-intl/issues"
+  },
+  "homepage": "https://github.com/coot/purescript-intl#readme",
+  "devDependencies": {
+    "pulp": "^11.0.0"
+  }
+}
