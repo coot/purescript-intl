@@ -3,13 +3,12 @@ module Test.Main where
 import Prelude
 
 import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Unsafe (unsafePerformEff)
 import Control.Monad.Eff.Console (CONSOLE)
 import Data.DateTime (Date, DateTime(..), Month(..), canonicalDate)
 import Data.Enum (toEnum)
 import Data.Generic.Rep (class Generic)
 import Data.Intl.DateTimeFormat (DateTimeFormatOptions(..), DateTimeFormatOptions', HourMinute(HourMinute), HourMinuteSecond(HourMinuteSecond), LocalesOption, MonthDay(..), MonthRep(..), NumericRep(Numeric, TwoDigit), StringRep(..), TimeZone(TimeZone), WeekdayYearMonthDay(..), WeekdayYearMonthDayHourMinuteSecond(WeekdayYearMonthDayHourMinuteSecond), YearMonth(..), YearMonthDay(..), createDateTimeFormatter, formatJSDate)
-import Data.Intl.DateTimeFormat.Class (class FormatComponent, genericFormatComponent)
+import Data.Intl.DateTimeFormat.Generic (class FormatComponent, genericFormatComponent)
 import Data.JSDate (JSDate, fromDateTime)
 import Data.Maybe (Maybe(..))
 import Data.Symbol (SProxy(..))
