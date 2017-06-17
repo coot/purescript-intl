@@ -3,7 +3,7 @@ module Test.Main where
 import Prelude
 
 import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
+import Control.Monad.Eff.Console (CONSOLE)
 import Data.DateTime (Date, DateTime(..), Month(..), canonicalDate)
 import Data.Enum (toEnum)
 import Data.Generic.Rep (class Generic)
@@ -15,7 +15,7 @@ import Data.Symbol (SProxy(..))
 import Data.Time (Time(..))
 import Data.Variant (inj)
 import Partial.Unsafe (unsafeCrashWith)
-import Test.Assert (ASSERT, assert)
+import Test.Assert (ASSERT, assert')
 
 type Tests = Eff (console :: CONSOLE, assert :: ASSERT) Unit
 
@@ -258,21 +258,39 @@ main = do
   case jsDate of
     Nothing -> unsafeCrashWith "jsDate not parsed"
     Just d -> do
-      log "fmtWeekdayYearMonthDayHourMinuteSecond"
-      assert $ formatJSDate fmtWeekdayYearMonthDayHourMinuteSecond d == "Tue, 2 January 2018, 12:00:00 pm"
-      log "fmtWeekdayYearMonthDay"
-      assert $ formatJSDate fmtWeekdayYearMonthDay d == "Tuesday, 02 Jan 18"
-      log "fmtYearMonthDay"
-      assert $ formatJSDate fmtYearMonthDay d == "02 J 18"
-      log "fmtYearMonth"
-      assert $ formatJSDate fmtYearMonth d == "01/2018"
-      log "fmtMonthDay"
-      assert $ formatJSDate fmtMonthDay d == "02/01"
-      log "fmtHourMinuteSecond"
-      assert $ formatJSDate fmtHourMinuteSecond d == "12:00:00"
-      log "fmtHourMinute"
-      assert $ formatJSDate fmtHourMinute d == "12:00"
-      log "fmtEraYear"
-      assert $ formatJSDate fmtEraYear d == "2018 Anno Domini"
-      log "fmtEra"
-      assert $ formatJSDate fmtEra d == "2 1 2018 AD"
+      let fmtDate1 = formatJSDate fmtWeekdayYearMonthDayHourMinuteSecond d
+          fmtDate1Expected = "Tue, 2 January 2018, 12:00:00 pm"
+      assert' ("fmtWeekdayYearMonthDayHourMinuteSecond: got: '" <> fmtDate1 <> "' expected: '" <> fmtDate1Expected <> "'")
+        $ fmtDate1 == fmtDate1Expected
+      let fmtDate2 = formatJSDate fmtWeekdayYearMonthDay d
+          fmtDate2Expected = "Tuesday, 02 Jan 18"
+      assert' ("fmtWeekdayYearMonthDayString: got '" <> fmtDate2 <> "' expected: '" <> fmtDate2Expected <> "'")
+        $ fmtDate2 == fmtDate2Expected
+      let fmtDate3 = formatJSDate fmtYearMonthDay d
+          fmtDate3Expected = "02 J 18"
+      assert' ("fmtYearMonthDayString: got '" <> fmtDate3 <> "' expected: '" <> fmtDate3Expected <> "'")
+        $ fmtDate3 == fmtDate3Expected
+      let fmtDate4 = formatJSDate fmtYearMonth d
+          fmtDate4Expected = "01/2018"
+      assert' ("fmtYearMonthString: got '" <> fmtDate4 <> "' expected: '" <> fmtDate4Expected <> "'")
+        $ fmtDate4 == fmtDate4Expected
+      let fmtDate5 = formatJSDate fmtMonthDay d
+          fmtDate5Expected = "02/01"
+      assert' ("fmtMonthDayString: got '" <> fmtDate5 <> "' expected: '" <> fmtDate5Expected <> "'")
+        $ fmtDate5 == fmtDate5Expected
+      let fmtDate6 = formatJSDate fmtHourMinuteSecond d
+          fmtDate6Expected = "12:00:00"
+      assert' ("fmtHourMinuteSecondString: got '" <> fmtDate6 <> "' expected: '" <> fmtDate6Expected <> "'")
+        $ fmtDate6 == fmtDate6Expected
+      let fmtDate7 = formatJSDate fmtHourMinute d
+          fmtDate7Expected = "12:00"
+      assert' ("fmtHourMinuteString: got '" <> fmtDate7 <> "' expected: '" <> fmtDate7Expected <> "'")
+        $ fmtDate7 == fmtDate7Expected
+      let fmtDate8 = formatJSDate fmtEraYear d
+          fmtDate8Expected = "2018 Anno Domini"
+      assert' ("fmtEraYear: got '" <> fmtDate8 <> "' expected: '" <> fmtDate8Expected <> "'")
+        $ fmtDate8 == fmtDate8Expected
+      let fmtDate9 = formatJSDate fmtEra d
+          fmtDate9Expected = "2 1 2018 AD"
+      assert' ("fmtEra: got '" <> fmtDate9 <> "' expected: '" <> fmtDate9Expected <> "'")
+        $ fmtDate9 == fmtDate9Expected
