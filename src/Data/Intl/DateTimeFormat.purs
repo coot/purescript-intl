@@ -19,10 +19,6 @@ module Data.Intl.DateTimeFormat
   , createDateTimeFormatter
   , formatJSDate
   , module Data.Intl.DateTimeFormat.Types
-
-  -- private
-  , formatDateTimeOptions
-  , DateTimeFormatOptions_
   ) where
 
 import Data.Intl.DateTimeFormat.Types
