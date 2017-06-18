@@ -3,15 +3,6 @@ module Data.Intl.DateTimeFormat
   , LocaleMatcher(..)
   , TimeZone(..)
   , FormatMatcher(..)
-  , WeekdayYearMonthDayHourMinuteSecond(..)
-  , WeekdayYearMonthDay(..)
-  , YearMonthDay(..)
-  , YearMonth(..)
-  , MonthDay(..)
-  , HourMinuteSecond(..)
-  , HourMinute(..)
-  , Undefined
-  , undefined
   , DateTimeFormatOptions(..)
   , DateTimeFormatOptions'
   , DateTimeComponents(..)
@@ -44,9 +35,6 @@ import Prelude (class Eq, class Show, Unit, bind, id, pure, show, (#), ($), (<$>
 import Unsafe.Coerce (unsafeCoerce)
 
 foreign import data LocalesOption' :: Type
-
-foreign import data Undefined :: Type
-foreign import undefined :: Undefined
 
 foreign import dateTimeFormatImpl :: LocalesOption' -> DateTimeFormatOptions_ -> DateTimeFormat
 
@@ -98,85 +86,6 @@ data FormatMatcher
 instance showFormatMatcher :: Show FormatMatcher where
   show FMBasic = "basic"
   show FMBestFit = "best fit"
-
-newtype WeekdayYearMonthDayHourMinuteSecond = WeekdayYearMonthDayHourMinuteSecond
-  { weekday :: StringRep
-  , year :: NumericRep
-  , month :: MonthRep
-  , day :: NumericRep
-  , hour :: NumericRep
-  , minute :: NumericRep
-  , second :: NumericRep
-  }
-
-derive instance genericWeekdayYearMonthDayHourMinuteSecond :: Generic WeekdayYearMonthDayHourMinuteSecond _
-
-instance formatComponentWeekdayYearMonthDayHourMinuteSecond :: FormatComponent WeekdayYearMonthDayHourMinuteSecond where
-  formatComponent = genericFormatComponent
-
-newtype WeekdayYearMonthDay = WeekdayYearMonthDay
-    { weekday :: StringRep
-    , year :: NumericRep
-    , month :: MonthRep
-    , day :: NumericRep
-    }
-
-derive instance genericWeekdayYearMonthDay :: Generic WeekdayYearMonthDay _
-
-instance formatComponentWeekdayYearMonthDay :: FormatComponent WeekdayYearMonthDay where
-  formatComponent = genericFormatComponent
-
-newtype YearMonthDay = YearMonthDay
-  { year :: NumericRep
-  , month :: MonthRep
-  , day :: NumericRep
-  }
-
-derive instance genericYearMonthDay :: Generic YearMonthDay _
-
-instance formatComponentYearMonthDay :: FormatComponent YearMonthDay where
-  formatComponent = genericFormatComponent
-
-newtype YearMonth = YearMonth
-  { year :: NumericRep
-  , month :: MonthRep
-  }
-
-derive instance genericYearMonth :: Generic YearMonth _
-
-instance formatComponentYearMonth :: FormatComponent YearMonth where
-  formatComponent = genericFormatComponent
-
-newtype MonthDay = MonthDay
-  { month :: MonthRep
-  , day :: NumericRep
-  }
-
-derive instance genericMonthDay :: Generic MonthDay _
-
-instance formatComponentMonthDay :: FormatComponent MonthDay where
-  formatComponent = genericFormatComponent
-
-newtype HourMinuteSecond = HourMinuteSecond
-  { hour :: NumericRep
-  , minute :: NumericRep
-  , second :: NumericRep
-  }
-
-derive instance genericHourMinuteSecond :: Generic HourMinuteSecond _
-
-instance formatComponentHourMinuteSecond :: FormatComponent HourMinuteSecond where
-  formatComponent = genericFormatComponent
-
-newtype HourMinute = HourMinute
-  { hour :: NumericRep
-  , minute :: NumericRep
-  }
-
-derive instance genericHourMinute :: Generic HourMinute _
-
-instance formatComponentHourMinute :: FormatComponent HourMinute where
-  formatComponent = genericFormatComponent
 
 type DateTimeComponents a =
   Variant

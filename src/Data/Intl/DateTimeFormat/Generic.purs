@@ -1,51 +1,17 @@
 module Data.Intl.DateTimeFormat.Generic
-  ( class FormatComponent
-  , formatComponent
-  , class GenericFormatComponent
+  ( class GenericFormatComponent
   , genericFormatComponent'
   , genericFormatComponent
   , class GenericFormatComponentFields
   , genericFormatComponentFields
-  , defaultComponentRecord
-  , FormatComponentRecord
   ) where
 
 import Data.Generic.Rep (class Generic, Constructor(Constructor), Field(..), NoConstructors, Product(..), Rec(..), from)
+import Data.Intl.DateTimeFormat.Class (FormatComponentRecord)
 import Data.Intl.DateTimeFormat.Types (MonthRep, NumericRep, TimeZoneNameRep, StringRep)
 import Data.Maybe (Maybe(..))
 import Data.StrMap (StrMap, lookup, singleton, union)
-import Prelude (Unit, show)
-
-type FormatComponentRecord =
-  { era :: Maybe String
-  , weekday :: Maybe String
-  , year :: Maybe String
-  , month :: Maybe String
-  , day :: Maybe String
-  , hour :: Maybe String
-  , minute :: Maybe String
-  , second :: Maybe String
-  , timeZoneName :: Maybe String
-  }
-
-defaultComponentRecord :: FormatComponentRecord
-defaultComponentRecord =
-  { era: Nothing
-  , weekday: Nothing
-  , year: Nothing
-  , month: Nothing
-  , day: Nothing
-  , hour: Nothing
-  , minute: Nothing
-  , second: Nothing
-  , timeZoneName: Nothing
-  }
-
-class FormatComponent a where
-  formatComponent :: a -> FormatComponentRecord
-
-instance unitFormatComponent :: FormatComponent Unit where
-  formatComponent _ = defaultComponentRecord
+import Prelude (show)
 
 class GenericFormatComponent a where
   genericFormatComponent' :: a -> FormatComponentRecord
