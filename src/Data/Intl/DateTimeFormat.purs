@@ -29,7 +29,7 @@ import Data.Intl.DateTimeFormat.Types
 import Data.Either (Either(..))
 import Data.Foreign (F, Foreign, isUndefined, readString)
 import Data.Foreign.Index ((!))
-import Data.Function.Uncurried (Fn3, runFn3)
+import Data.Function.Uncurried (Fn3, Fn4, runFn3, runFn4)
 import Data.Generic.Rep (class Generic)
 import Data.Intl.DateTimeFormat.Generic (class FormatComponent, defaultComponentRecord, formatComponent, genericFormatComponent)
 import Data.JSDate (JSDate)
@@ -281,21 +281,29 @@ formatDateTimeOptions (DateTimeFormatOptions opts comps) = merge opts' (compsCoe
 foreign import data DateTimeFormatter :: Type
 
 foreign import createDateTimeFormatterImpl
-  :: LocalesOption'
-  -> DateTimeFormatOptions_
-  -> DateTimeFormatter
+  :: Fn4
+      (String -> Either String DateTimeFormatter)
+      (DateTimeFormatter -> Either String DateTimeFormatter)
+      LocalesOption'
+      DateTimeFormatOptions_
+      (Either String DateTimeFormatter)
 
 createDateTimeFormatter
   :: forall a
    .(FormatComponent a)
   => LocalesOption
   -> DateTimeFormatOptions a
-  -> DateTimeFormatter
-createDateTimeFormatter ls opts = createDateTimeFormatterImpl (toLocale ls) (formatDateTimeOptions opts)
+  -> Either String DateTimeFormatter
+createDateTimeFormatter ls opts = runFn4 createDateTimeFormatterImpl Left Right (toLocale ls) (formatDateTimeOptions opts)
 
 foreign import formatJSDate :: DateTimeFormatter -> JSDate -> String
 
-foreign import supportedLocalesOfImpl :: Fn3 (String -> Either String (Array String)) (Array String -> Either String (Array String)) (Array String) (Either String (Array String))
+foreign import supportedLocalesOfImpl
+  :: Fn3
+      (String -> Either String (Array String))
+      (Array String -> Either String (Array String))
+      (Array String)
+      (Either String (Array String))
  
 foreign import formatToPartsImpl :: DateTimeFormatter -> JSDate -> Array Foreign
 

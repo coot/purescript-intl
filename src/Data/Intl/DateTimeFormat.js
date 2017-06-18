@@ -8,10 +8,12 @@ exports.dateTimeFormatImpl = function(locales) {
   };
 };
 
-exports.createDateTimeFormatterImpl = function(locales) {
-  return function(opts) {
-    return Intl.DateTimeFormat(locales, opts);
-  };
+exports.createDateTimeFormatterImpl = function(Left, Right, locales, opts) {
+  try {
+    return Right(Intl.DateTimeFormat(locales, opts));
+  } catch (e) {
+    return Left(e.message);
+  }
 };
 
 exports.formatJSDate = function(formatter) {

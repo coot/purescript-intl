@@ -6,7 +6,7 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE)
 import Control.Monad.Except (runExcept)
 import Data.DateTime (Date, DateTime(..), Month(..), canonicalDate)
-import Data.Either (Either(..), isLeft)
+import Data.Either (Either(..), fromRight, isLeft)
 import Data.Enum (toEnum)
 import Data.Foldable (intercalate)
 import Data.Foreign (renderForeignError)
@@ -18,7 +18,7 @@ import Data.Maybe (Maybe(..), isJust, isNothing)
 import Data.Symbol (SProxy(..))
 import Data.Time (Time(..))
 import Data.Variant (inj)
-import Partial.Unsafe (unsafeCrashWith)
+import Partial.Unsafe (unsafeCrashWith, unsafePartial)
 import Test.Assert (ASSERT, assert')
 
 type Tests = Eff (console :: CONSOLE, assert :: ASSERT) Unit
@@ -55,7 +55,21 @@ main = do
     locales :: LocalesOption
     locales = inj (SProxy :: SProxy "locale") "en-US"
 
-    fmtHourMinute =
+    fmtError =
+      createDateTimeFormatter (inj (SProxy :: SProxy "locale") "") opts
+        where
+          opts :: DateTimeFormatOptions'
+          opts = 
+            (DateTimeFormatOptions
+              { localeMatcher: Nothing
+              , timeZone: (Just (TimeZone "Europe/London"))
+              , hour12: Just false
+              , formatMatcher: Nothing
+              }
+              (inj (SProxy :: SProxy "hourMinute") (HourMinute {hour: TwoDigit, minute: TwoDigit}))
+            )
+
+    fmtHourMinute = unsafePartial $ fromRight $
       createDateTimeFormatter locales opts
         where
           opts :: DateTimeFormatOptions'
@@ -69,7 +83,7 @@ main = do
               (inj (SProxy :: SProxy "hourMinute") (HourMinute {hour: TwoDigit, minute: TwoDigit}))
             )
 
-    fmtHourMinuteSecond =
+    fmtHourMinuteSecond = unsafePartial $ fromRight $
       createDateTimeFormatter locales opts
         where
           opts :: DateTimeFormatOptions'
@@ -83,7 +97,7 @@ main = do
               (inj (SProxy :: SProxy "hourMinuteSecond") (HourMinuteSecond {hour: Numeric, minute: Numeric, second: Numeric}))
             )
           
-    fmtWeekdayYearMonthDayHourMinuteSecond =
+    fmtWeekdayYearMonthDayHourMinuteSecond = unsafePartial $ fromRight $
       createDateTimeFormatter locales opts
         where
           opts :: DateTimeFormatOptions'
@@ -109,7 +123,7 @@ main = do
               )
             )
 
-    fmtWeekdayYearMonthDay =
+    fmtWeekdayYearMonthDay = unsafePartial $ fromRight $
       createDateTimeFormatter locales opts
         where
           opts :: DateTimeFormatOptions'
@@ -132,7 +146,7 @@ main = do
               )
             )
 
-    fmtYearMonthDay =
+    fmtYearMonthDay = unsafePartial $ fromRight $
       createDateTimeFormatter locales opts
         where
           opts :: DateTimeFormatOptions'
@@ -154,7 +168,7 @@ main = do
               )
             )
 
-    fmtYearMonth =
+    fmtYearMonth = unsafePartial $ fromRight $
       createDateTimeFormatter locales opts
         where
           opts :: DateTimeFormatOptions'
@@ -175,7 +189,7 @@ main = do
               )
             )
 
-    fmtMonthDay =
+    fmtMonthDay = unsafePartial $ fromRight $
       createDateTimeFormatter locales opts
         where
           opts :: DateTimeFormatOptions'
@@ -196,7 +210,7 @@ main = do
               )
             )
 
-    fmtEraYear =
+    fmtEraYear = unsafePartial $ fromRight $
       createDateTimeFormatter locales opts
         where
           opts :: DateTimeFormatOptions EraYear
@@ -217,7 +231,7 @@ main = do
               )
             )
 
-    fmtEra =
+    fmtEra = unsafePartial $ fromRight $
       createDateTimeFormatter locales opts
         where
           opts :: DateTimeFormatOptions Era
@@ -262,6 +276,9 @@ main = do
   case jsDate of
     Nothing -> unsafeCrashWith "jsDate not parsed"
     Just d -> do
+
+      assert' "fmtError expected to return error" $ isLeft fmtError
+
       let fmtDate1 = formatJSDate fmtWeekdayYearMonthDayHourMinuteSecond d
           fmtDate1Expected = "Tue, January 2, 2018, 12:00:00 PM"
       assert' ("fmtWeekdayYearMonthDayHourMinuteSecond: got: '" <> fmtDate1 <> "' expected: '" <> fmtDate1Expected <> "'")
