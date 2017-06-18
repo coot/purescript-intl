@@ -20,21 +20,26 @@ module Data.Intl.DateTimeFormat
   , formatJSDate
   , module Data.Intl.DateTimeFormat.Types
   , supportedLocalesOf
+  , formatToParts
+  , resolvedOptions
   ) where
 
 import Data.Intl.DateTimeFormat.Types
 
 import Data.Either (Either(..))
+import Data.Foreign (F, Foreign, isUndefined, readString)
+import Data.Foreign.Index ((!))
 import Data.Function.Uncurried (Fn3, runFn3)
 import Data.Generic.Rep (class Generic)
 import Data.Intl.DateTimeFormat.Generic (class FormatComponent, defaultComponentRecord, formatComponent, genericFormatComponent)
 import Data.JSDate (JSDate)
-import Data.Maybe (Maybe, fromMaybe, maybe)
+import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Newtype (class Newtype)
 import Data.StrMap (union)
 import Data.Symbol (SProxy(..))
+import Data.Traversable (sequence)
 import Data.Variant (Variant, default, on)
-import Prelude (class Eq, class Show, Unit, id, show, (#), ($))
+import Prelude (class Eq, class Show, Unit, bind, id, pure, show, (#), ($), (<$>), (>>=))
 import Unsafe.Coerce (unsafeCoerce)
 
 foreign import data LocalesOption' :: Type
@@ -291,6 +296,39 @@ createDateTimeFormatter ls opts = createDateTimeFormatterImpl (toLocale ls) (for
 foreign import formatJSDate :: DateTimeFormatter -> JSDate -> String
 
 foreign import supportedLocalesOfImpl :: Fn3 (String -> Either String (Array String)) (Array String -> Either String (Array String)) (Array String) (Either String (Array String))
+ 
+foreign import formatToPartsImpl :: DateTimeFormatter -> JSDate -> Array Foreign
+
+formatToParts :: DateTimeFormatter -> JSDate -> F (Array FormatParts)
+formatToParts formatter date = sequence $ readFormatParts <$> formatToPartsImpl formatter date
 
 supportedLocalesOf :: Array String -> Either String (Array String)
 supportedLocalesOf locales = runFn3 supportedLocalesOfImpl Left Right locales
+
+foreign import resolvedOptionsImpl :: DateTimeFormatter -> Foreign
+
+resolvedOptions :: DateTimeFormatter -> F ResolvedOptions
+resolvedOptions fmt = do
+  locale <- obj ! "locale" >>= readString
+  calendar <- obj ! "calendar" >>= readString
+  numberingSystem <- obj ! "numberingSystem" >>= readString
+  timeZone <- obj ! "timeZone" >>= readString
+  era <- obj ! "era" >>= readMaybeString
+  weekday <- obj ! "weekday" >>= readMaybeString
+  year <- obj ! "year" >>= readMaybeString
+  day <- obj ! "day" >>= readMaybeString
+  hour <- obj ! "hour" >>= readMaybeString
+  minute <- obj ! "minute" >>= readMaybeString
+  second <- obj ! "second" >>= readMaybeString
+  timeZoneName <- obj ! "timeZoneName" >>= readMaybeString
+
+  pure $ ResolvedOptions { locale, calendar, numberingSystem, timeZone, era, weekday, year, day, hour, minute, second, timeZoneName }
+
+  where
+    obj = resolvedOptionsImpl fmt
+
+    readMaybeString :: Foreign -> F (Maybe String)
+    readMaybeString f =
+      if isUndefined f
+        then pure Nothing
+        else Just <$> readString f

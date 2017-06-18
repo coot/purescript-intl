@@ -20,6 +20,12 @@ exports.formatJSDate = function(formatter) {
   };
 };
 
+exports.formatToPartsImpl = function(formatter) {
+  return function(date) {
+    return formatter.formatToParts(date);
+  };
+};
+
 exports.supportedLocalesOfImpl = function(Left, Right, locales) {
   try {
     return Right(Intl.DateTimeFormat.supportedLocalesOf(locales))
@@ -27,3 +33,7 @@ exports.supportedLocalesOfImpl = function(Left, Right, locales) {
     return Left(e.message)
   }
 }
+
+exports.resolvedOptionsImpl = function(formatter) {
+  return formatter.resolvedOptions();
+};
