@@ -4,14 +4,17 @@ import Prelude
 
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE)
+import Control.Monad.Except (runExcept)
 import Data.DateTime (Date, DateTime(..), Month(..), canonicalDate)
 import Data.Either (Either(..), isLeft)
 import Data.Enum (toEnum)
+import Data.Foldable (intercalate)
+import Data.Foreign (renderForeignError)
 import Data.Generic.Rep (class Generic)
-import Data.Intl.DateTimeFormat (DateTimeFormatOptions(..), DateTimeFormatOptions', HourMinute(HourMinute), HourMinuteSecond(HourMinuteSecond), LocalesOption, MonthDay(..), MonthRep(..), NumericRep(Numeric, TwoDigit), StringRep(..), TimeZone(TimeZone), WeekdayYearMonthDay(..), WeekdayYearMonthDayHourMinuteSecond(WeekdayYearMonthDayHourMinuteSecond), YearMonth(..), YearMonthDay(..), createDateTimeFormatter, formatJSDate, supportedLocalesOf)
+import Data.Intl.DateTimeFormat (DateTimeFormatOptions(DateTimeFormatOptions), DateTimeFormatOptions', HourMinute(HourMinute), HourMinuteSecond(HourMinuteSecond), LocalesOption, MonthDay(MonthDay), MonthRep(MonthTwoDigit, MonthNumeric, MonthNarrow, MonthShort, MonthLong), NumericRep(Numeric, TwoDigit), ResolvedOptions(..), StringRep(Short, Long), TimeZone(TimeZone), WeekdayYearMonthDay(WeekdayYearMonthDay), WeekdayYearMonthDayHourMinuteSecond(WeekdayYearMonthDayHourMinuteSecond), YearMonth(YearMonth), YearMonthDay(YearMonthDay), createDateTimeFormatter, formatJSDate, resolvedOptions, supportedLocalesOf)
 import Data.Intl.DateTimeFormat.Generic (class FormatComponent, genericFormatComponent)
 import Data.JSDate (JSDate, fromDateTime)
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), isJust, isNothing)
 import Data.Symbol (SProxy(..))
 import Data.Time (Time(..))
 import Data.Variant (inj)
@@ -301,3 +304,19 @@ main = do
 
       let err = supportedLocalesOf ["en_US"]
       assert' ("supportedLocalesOf got: " <> show err) $ isLeft err
+
+      -- formatToParts is not supported in node
+      -- let parts = runExcept $ formatToParts fmtHourMinute d
+      -- assert' ("") $ isRight parts 
+
+      case runExcept (resolvedOptions fmtHourMinuteSecond) of
+        Left errs-> assert' ("resolvedOptions error: " <> (intercalate "; " $ renderForeignError <$> errs)) false
+        Right (ResolvedOptions {locale, year, day, weekday, hour, minute, second}) -> do
+          assert' ("resolvedOptions locale: got: " <> locale) $ (locale == "en-US") || (locale == "en")
+          assert' ("resolvedOptions year: got Just") $ isNothing year
+          assert' ("resolvedOptions day: got Just") $ isNothing day
+          assert' ("resolvedOptions weekday: got Just") $ isNothing weekday
+          assert' ("resolvedOptions hour: got Nothing") $ isJust hour
+          assert' ("resolvedOptions minute: got Nothing") $ isJust minute
+          assert' ("resolvedOptions second: got Nothing") $ isJust second
+
