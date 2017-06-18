@@ -15,8 +15,8 @@ module Data.Intl.DateTimeFormat
   , DateTimeFormatOptions(..)
   , DateTimeFormatOptions'
   , DateTimeComponents(..)
-  , DateTimeFormatter
-  , createDateTimeFormatter
+  , DateTimeFormat
+  , createDateTimeFormat
   , formatJSDate
   , module Data.Intl.DateTimeFormat.Types
   , supportedLocalesOf
@@ -44,7 +44,6 @@ import Prelude (class Eq, class Show, Unit, bind, id, pure, show, (#), ($), (<$>
 import Unsafe.Coerce (unsafeCoerce)
 
 foreign import data LocalesOption' :: Type
-foreign import data DateTimeFormat :: Type
 
 foreign import data Undefined :: Type
 foreign import undefined :: Undefined
@@ -279,30 +278,30 @@ formatDateTimeOptions (DateTimeFormatOptions opts comps) = merge opts' (compsCoe
     -> DateTimeFormatOptions_
   merge a b = unsafeCoerce $ union (unsafeCoerce a) (unsafeCoerce b)
 
-foreign import data DateTimeFormatter :: Type
+foreign import data DateTimeFormat :: Type
 
-foreign import createDateTimeFormatterImpl
+foreign import createDateTimeFormatImpl
   :: Fn4
       (forall a. String -> F a)
       (forall a. a -> F a)
       LocalesOption'
       DateTimeFormatOptions_
-      (F DateTimeFormatter)
+      (F DateTimeFormat)
 
-createDateTimeFormatter
+createDateTimeFormat
   :: forall a
    .(FormatComponent a)
   => LocalesOption
   -> DateTimeFormatOptions a
-  -> F DateTimeFormatter
-createDateTimeFormatter ls opts =
-  runFn4 createDateTimeFormatterImpl
+  -> F DateTimeFormat
+createDateTimeFormat ls opts =
+  runFn4 createDateTimeFormatImpl
     (throwError <<< pure <<< ForeignError)
     pure
     (toLocale ls)
     (formatDateTimeOptions opts)
 
-foreign import formatJSDate :: DateTimeFormatter -> JSDate -> String
+foreign import formatJSDate :: DateTimeFormat -> JSDate -> String
 
 foreign import supportedLocalesOfImpl
   :: Fn3
@@ -311,17 +310,17 @@ foreign import supportedLocalesOfImpl
       (Array String)
       (Either String (Array String))
  
-foreign import formatToPartsImpl :: DateTimeFormatter -> JSDate -> Array Foreign
+foreign import formatToPartsImpl :: DateTimeFormat -> JSDate -> Array Foreign
 
-formatToParts :: DateTimeFormatter -> JSDate -> F (Array FormatParts)
+formatToParts :: DateTimeFormat -> JSDate -> F (Array FormatParts)
 formatToParts formatter date = sequence $ readFormatParts <$> formatToPartsImpl formatter date
 
 supportedLocalesOf :: Array String -> Either String (Array String)
 supportedLocalesOf locales = runFn3 supportedLocalesOfImpl Left Right locales
 
-foreign import resolvedOptionsImpl :: DateTimeFormatter -> Foreign
+foreign import resolvedOptionsImpl :: DateTimeFormat -> Foreign
 
-resolvedOptions :: DateTimeFormatter -> F ResolvedOptions
+resolvedOptions :: DateTimeFormat -> F ResolvedOptions
 resolvedOptions fmt = do
   locale <- obj ! "locale" >>= readString
   calendar <- obj ! "calendar" >>= readString

@@ -11,7 +11,7 @@ import Data.Enum (toEnum)
 import Data.Foldable (intercalate)
 import Data.Foreign (F, renderForeignError)
 import Data.Generic.Rep (class Generic)
-import Data.Intl.DateTimeFormat (DateTimeFormatOptions(DateTimeFormatOptions), DateTimeFormatOptions', HourMinute(HourMinute), HourMinuteSecond(HourMinuteSecond), LocalesOption, MonthDay(MonthDay), MonthRep(MonthTwoDigit, MonthNumeric, MonthNarrow, MonthShort, MonthLong), NumericRep(Numeric, TwoDigit), ResolvedOptions(..), StringRep(Short, Long), TimeZone(TimeZone), WeekdayYearMonthDay(WeekdayYearMonthDay), WeekdayYearMonthDayHourMinuteSecond(WeekdayYearMonthDayHourMinuteSecond), YearMonth(YearMonth), YearMonthDay(YearMonthDay), createDateTimeFormatter, formatJSDate, resolvedOptions, supportedLocalesOf)
+import Data.Intl.DateTimeFormat (DateTimeFormatOptions(DateTimeFormatOptions), DateTimeFormatOptions', HourMinute(HourMinute), HourMinuteSecond(HourMinuteSecond), LocalesOption, MonthDay(MonthDay), MonthRep(MonthTwoDigit, MonthNumeric, MonthNarrow, MonthShort, MonthLong), NumericRep(Numeric, TwoDigit), ResolvedOptions(..), StringRep(Short, Long), TimeZone(TimeZone), WeekdayYearMonthDay(WeekdayYearMonthDay), WeekdayYearMonthDayHourMinuteSecond(WeekdayYearMonthDayHourMinuteSecond), YearMonth(YearMonth), YearMonthDay(YearMonthDay), createDateTimeFormat, formatJSDate, resolvedOptions, supportedLocalesOf)
 import Data.Intl.DateTimeFormat.Generic (class FormatComponent, genericFormatComponent)
 import Data.JSDate (JSDate, fromDateTime)
 import Data.Maybe (Maybe(..), isJust, isNothing)
@@ -59,7 +59,7 @@ main = do
     locales = inj (SProxy :: SProxy "locale") "en-US"
 
     fmtError =
-      createDateTimeFormatter (inj (SProxy :: SProxy "locale") "") opts
+      createDateTimeFormat (inj (SProxy :: SProxy "locale") "") opts
         where
           opts :: DateTimeFormatOptions'
           opts = 
@@ -73,7 +73,7 @@ main = do
             )
 
     fmtHourMinute = unsafeFromF $
-      createDateTimeFormatter locales opts
+      createDateTimeFormat locales opts
         where
           opts :: DateTimeFormatOptions'
           opts = 
@@ -87,7 +87,7 @@ main = do
             )
 
     fmtHourMinuteSecond = unsafeFromF $
-      createDateTimeFormatter locales opts
+      createDateTimeFormat locales opts
         where
           opts :: DateTimeFormatOptions'
           opts = 
@@ -101,7 +101,7 @@ main = do
             )
           
     fmtWeekdayYearMonthDayHourMinuteSecond = unsafeFromF $
-      createDateTimeFormatter locales opts
+      createDateTimeFormat locales opts
         where
           opts :: DateTimeFormatOptions'
           opts = 
@@ -127,7 +127,7 @@ main = do
             )
 
     fmtWeekdayYearMonthDay = unsafeFromF $
-      createDateTimeFormatter locales opts
+      createDateTimeFormat locales opts
         where
           opts :: DateTimeFormatOptions'
           opts =
@@ -150,7 +150,7 @@ main = do
             )
 
     fmtYearMonthDay = unsafeFromF $
-      createDateTimeFormatter locales opts
+      createDateTimeFormat locales opts
         where
           opts :: DateTimeFormatOptions'
           opts =
@@ -172,7 +172,7 @@ main = do
             )
 
     fmtYearMonth = unsafeFromF $
-      createDateTimeFormatter locales opts
+      createDateTimeFormat locales opts
         where
           opts :: DateTimeFormatOptions'
           opts =
@@ -193,7 +193,7 @@ main = do
             )
 
     fmtMonthDay = unsafeFromF $
-      createDateTimeFormatter locales opts
+      createDateTimeFormat locales opts
         where
           opts :: DateTimeFormatOptions'
           opts =
@@ -214,7 +214,7 @@ main = do
             )
 
     fmtEraYear = unsafeFromF $
-      createDateTimeFormatter locales opts
+      createDateTimeFormat locales opts
         where
           opts :: DateTimeFormatOptions EraYear
           opts =
@@ -235,7 +235,7 @@ main = do
             )
 
     fmtEra = unsafeFromF $
-      createDateTimeFormatter locales opts
+      createDateTimeFormat locales opts
         where
           opts :: DateTimeFormatOptions Era
           opts =

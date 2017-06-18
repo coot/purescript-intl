@@ -8,7 +8,7 @@ exports.dateTimeFormatImpl = function(locales) {
   };
 };
 
-exports.createDateTimeFormatterImpl = function(throwError, pure, locales, opts) {
+exports.createDateTimeFormatImpl = function(throwError, pure, locales, opts) {
   try {
     return pure(Intl.DateTimeFormat(locales, opts));
   } catch (e) {
