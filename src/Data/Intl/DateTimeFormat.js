@@ -8,11 +8,11 @@ exports.dateTimeFormatImpl = function(locales) {
   };
 };
 
-exports.createDateTimeFormatterImpl = function(Left, Right, locales, opts) {
+exports.createDateTimeFormatterImpl = function(throwError, pure, locales, opts) {
   try {
-    return Right(Intl.DateTimeFormat(locales, opts));
+    return pure(Intl.DateTimeFormat(locales, opts));
   } catch (e) {
-    return Left(e.message);
+    return throwError(e.message);
   }
 };
 

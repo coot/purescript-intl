@@ -26,8 +26,9 @@ module Data.Intl.DateTimeFormat
 
 import Data.Intl.DateTimeFormat.Types
 
+import Control.Monad.Error.Class (throwError)
 import Data.Either (Either(..))
-import Data.Foreign (F, Foreign, isUndefined, readString)
+import Data.Foreign (F, Foreign, ForeignError(..), isUndefined, readString)
 import Data.Foreign.Index ((!))
 import Data.Function.Uncurried (Fn3, Fn4, runFn3, runFn4)
 import Data.Generic.Rep (class Generic)
@@ -39,7 +40,7 @@ import Data.StrMap (union)
 import Data.Symbol (SProxy(..))
 import Data.Traversable (sequence)
 import Data.Variant (Variant, default, on)
-import Prelude (class Eq, class Show, Unit, bind, id, pure, show, (#), ($), (<$>), (>>=))
+import Prelude (class Eq, class Show, Unit, bind, id, pure, show, (#), ($), (<$>), (<<<), (>>=))
 import Unsafe.Coerce (unsafeCoerce)
 
 foreign import data LocalesOption' :: Type
@@ -282,19 +283,24 @@ foreign import data DateTimeFormatter :: Type
 
 foreign import createDateTimeFormatterImpl
   :: Fn4
-      (String -> Either String DateTimeFormatter)
-      (DateTimeFormatter -> Either String DateTimeFormatter)
+      (forall a. String -> F a)
+      (forall a. a -> F a)
       LocalesOption'
       DateTimeFormatOptions_
-      (Either String DateTimeFormatter)
+      (F DateTimeFormatter)
 
 createDateTimeFormatter
   :: forall a
    .(FormatComponent a)
   => LocalesOption
   -> DateTimeFormatOptions a
-  -> Either String DateTimeFormatter
-createDateTimeFormatter ls opts = runFn4 createDateTimeFormatterImpl Left Right (toLocale ls) (formatDateTimeOptions opts)
+  -> F DateTimeFormatter
+createDateTimeFormatter ls opts =
+  runFn4 createDateTimeFormatterImpl
+    (throwError <<< pure <<< ForeignError)
+    pure
+    (toLocale ls)
+    (formatDateTimeOptions opts)
 
 foreign import formatJSDate :: DateTimeFormatter -> JSDate -> String
 

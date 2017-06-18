@@ -9,7 +9,7 @@ import Data.DateTime (Date, DateTime(..), Month(..), canonicalDate)
 import Data.Either (Either(..), fromRight, isLeft)
 import Data.Enum (toEnum)
 import Data.Foldable (intercalate)
-import Data.Foreign (renderForeignError)
+import Data.Foreign (F, renderForeignError)
 import Data.Generic.Rep (class Generic)
 import Data.Intl.DateTimeFormat (DateTimeFormatOptions(DateTimeFormatOptions), DateTimeFormatOptions', HourMinute(HourMinute), HourMinuteSecond(HourMinuteSecond), LocalesOption, MonthDay(MonthDay), MonthRep(MonthTwoDigit, MonthNumeric, MonthNarrow, MonthShort, MonthLong), NumericRep(Numeric, TwoDigit), ResolvedOptions(..), StringRep(Short, Long), TimeZone(TimeZone), WeekdayYearMonthDay(WeekdayYearMonthDay), WeekdayYearMonthDayHourMinuteSecond(WeekdayYearMonthDayHourMinuteSecond), YearMonth(YearMonth), YearMonthDay(YearMonthDay), createDateTimeFormatter, formatJSDate, resolvedOptions, supportedLocalesOf)
 import Data.Intl.DateTimeFormat.Generic (class FormatComponent, genericFormatComponent)
@@ -52,6 +52,9 @@ main :: Tests
 main = do
   let
 
+    unsafeFromF :: forall a. F a -> a
+    unsafeFromF = unsafePartial fromRight <<< runExcept
+
     locales :: LocalesOption
     locales = inj (SProxy :: SProxy "locale") "en-US"
 
@@ -69,7 +72,7 @@ main = do
               (inj (SProxy :: SProxy "hourMinute") (HourMinute {hour: TwoDigit, minute: TwoDigit}))
             )
 
-    fmtHourMinute = unsafePartial $ fromRight $
+    fmtHourMinute = unsafeFromF $
       createDateTimeFormatter locales opts
         where
           opts :: DateTimeFormatOptions'
@@ -83,7 +86,7 @@ main = do
               (inj (SProxy :: SProxy "hourMinute") (HourMinute {hour: TwoDigit, minute: TwoDigit}))
             )
 
-    fmtHourMinuteSecond = unsafePartial $ fromRight $
+    fmtHourMinuteSecond = unsafeFromF $
       createDateTimeFormatter locales opts
         where
           opts :: DateTimeFormatOptions'
@@ -97,7 +100,7 @@ main = do
               (inj (SProxy :: SProxy "hourMinuteSecond") (HourMinuteSecond {hour: Numeric, minute: Numeric, second: Numeric}))
             )
           
-    fmtWeekdayYearMonthDayHourMinuteSecond = unsafePartial $ fromRight $
+    fmtWeekdayYearMonthDayHourMinuteSecond = unsafeFromF $
       createDateTimeFormatter locales opts
         where
           opts :: DateTimeFormatOptions'
@@ -123,7 +126,7 @@ main = do
               )
             )
 
-    fmtWeekdayYearMonthDay = unsafePartial $ fromRight $
+    fmtWeekdayYearMonthDay = unsafeFromF $
       createDateTimeFormatter locales opts
         where
           opts :: DateTimeFormatOptions'
@@ -146,7 +149,7 @@ main = do
               )
             )
 
-    fmtYearMonthDay = unsafePartial $ fromRight $
+    fmtYearMonthDay = unsafeFromF $
       createDateTimeFormatter locales opts
         where
           opts :: DateTimeFormatOptions'
@@ -168,7 +171,7 @@ main = do
               )
             )
 
-    fmtYearMonth = unsafePartial $ fromRight $
+    fmtYearMonth = unsafeFromF $
       createDateTimeFormatter locales opts
         where
           opts :: DateTimeFormatOptions'
@@ -189,7 +192,7 @@ main = do
               )
             )
 
-    fmtMonthDay = unsafePartial $ fromRight $
+    fmtMonthDay = unsafeFromF $
       createDateTimeFormatter locales opts
         where
           opts :: DateTimeFormatOptions'
@@ -210,7 +213,7 @@ main = do
               )
             )
 
-    fmtEraYear = unsafePartial $ fromRight $
+    fmtEraYear = unsafeFromF $
       createDateTimeFormatter locales opts
         where
           opts :: DateTimeFormatOptions EraYear
@@ -231,7 +234,7 @@ main = do
               )
             )
 
-    fmtEra = unsafePartial $ fromRight $
+    fmtEra = unsafeFromF $
       createDateTimeFormatter locales opts
         where
           opts :: DateTimeFormatOptions Era
@@ -277,7 +280,7 @@ main = do
     Nothing -> unsafeCrashWith "jsDate not parsed"
     Just d -> do
 
-      assert' "fmtError expected to return error" $ isLeft fmtError
+      assert' "fmtError expected to return error" $ isLeft (runExcept fmtError)
 
       let fmtDate1 = formatJSDate fmtWeekdayYearMonthDayHourMinuteSecond d
           fmtDate1Expected = "Tue, January 2, 2018, 12:00:00 PM"
