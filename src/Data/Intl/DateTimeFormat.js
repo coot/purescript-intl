@@ -1,7 +1,5 @@
 "use strict";
 
-exports["undefined"] = undefined;
-
 exports.dateTimeFormatImpl = function(locales) {
   return function(options) {
     return new Intl.DateTimeFormat(locales, options);
