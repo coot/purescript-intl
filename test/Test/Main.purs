@@ -12,7 +12,8 @@ import Data.Foldable (intercalate)
 import Data.Foreign (F, renderForeignError)
 import Data.Generic.Rep (class Generic)
 import Data.Intl.DateTimeFormat (DateTimeFormatOptions(DateTimeFormatOptions), DateTimeFormatOptions', HourMinute(HourMinute), HourMinuteSecond(HourMinuteSecond), LocalesOption, MonthDay(MonthDay), MonthRep(MonthTwoDigit, MonthNumeric, MonthNarrow, MonthShort, MonthLong), NumericRep(Numeric, TwoDigit), ResolvedOptions(..), StringRep(Short, Long), TimeZone(TimeZone), WeekdayYearMonthDay(WeekdayYearMonthDay), WeekdayYearMonthDayHourMinuteSecond(WeekdayYearMonthDayHourMinuteSecond), YearMonth(YearMonth), YearMonthDay(YearMonthDay), createDateTimeFormat, formatJSDate, resolvedOptions, supportedLocalesOf)
-import Data.Intl.DateTimeFormat.Generic (class FormatComponent, genericFormatComponent)
+import Data.Intl.DateTimeFormat.Class (class FormatComponent, FormatComponentRecord(..))
+import Data.Intl.DateTimeFormat.Generic (genericFormatComponent)
 import Data.JSDate (JSDate, fromDateTime)
 import Data.Maybe (Maybe(..), isJust, isNothing)
 import Data.Symbol (SProxy(..))
@@ -36,7 +37,7 @@ instance formatComponentEraYear :: FormatComponent EraYear where
 newtype Era = Era StringRep
 
 instance formatComponentEra :: FormatComponent Era where
-  formatComponent (Era r) =
+  formatComponent (Era r) = FormatComponentRecord
     { era: Just (show r)
     , weekday: Nothing
     , year: Nothing

@@ -7,7 +7,7 @@ module Data.Intl.DateTimeFormat.Generic
   ) where
 
 import Data.Generic.Rep (class Generic, Constructor(Constructor), Field(..), NoConstructors, Product(..), Rec(..), from)
-import Data.Intl.DateTimeFormat.Class (FormatComponentRecord)
+import Data.Intl.DateTimeFormat.Class (FormatComponentRecord(..))
 import Data.Intl.DateTimeFormat.Types (MonthRep, NumericRep, TimeZoneNameRep, StringRep)
 import Data.Maybe (Maybe(..))
 import Data.StrMap (StrMap, lookup, singleton, union)
@@ -20,7 +20,7 @@ class GenericFormatComponentFields a where
   genericFormatComponentFields :: a -> StrMap String
 
 instance genericFormatComponentNoConsturctors :: GenericFormatComponent NoConstructors where
-  genericFormatComponent' a =
+  genericFormatComponent' a = FormatComponentRecord
     { era: Nothing
     , weekday: Nothing
     , year: Nothing
@@ -80,7 +80,7 @@ instance genericFormatComponentFieldsProduct
 instance genericFormatComponentRec
     :: (GenericFormatComponentFields a)
     => GenericFormatComponent (Rec a) where
-  genericFormatComponent' (Rec a) =
+  genericFormatComponent' (Rec a) = FormatComponentRecord
     { era: "era" `lookup` u
     , weekday: "weekday" `lookup` u
     , year: "year" `lookup` u

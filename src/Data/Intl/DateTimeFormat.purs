@@ -22,15 +22,14 @@ import Data.Either (Either(..))
 import Data.Foreign (F, Foreign, ForeignError(..), isUndefined, readString)
 import Data.Foreign.Index ((!))
 import Data.Function.Uncurried (Fn3, Fn4, runFn3, runFn4)
-import Data.Generic.Rep (class Generic)
-import Data.Intl.DateTimeFormat.Generic (class FormatComponent, defaultComponentRecord, formatComponent, genericFormatComponent)
+import Data.Intl.DateTimeFormat.Class (class FormatComponent, FormatComponentRecord(FormatComponentRecord), formatComponent)
 import Data.JSDate (JSDate)
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
-import Data.Newtype (class Newtype)
+import Data.Newtype (class Newtype, un)
 import Data.StrMap (union)
 import Data.Symbol (SProxy(..))
 import Data.Traversable (sequence)
-import Data.Variant (Variant, default, on)
+import Data.Variant (Variant, case_, default, on)
 import Prelude (class Eq, class Show, Unit, bind, id, pure, show, (#), ($), (<$>), (<<<), (>>=))
 import Unsafe.Coerce (unsafeCoerce)
 
@@ -121,15 +120,15 @@ formatDateTimeOptions (DateTimeFormatOptions opts comps) = merge opts' (compsCoe
           , hour12: fromMaybe (unsafeCoerce undefined) opts.hour12
           , formatMatcher: maybe undefinedString show opts.formatMatcher
           }
-  comps' = default (defaultComponentRecord)
-    # on (SProxy :: SProxy "weekdayYearMonthDayHourMinuteSecond") formatComponent
-    # on (SProxy :: SProxy "weekdayYearMonthDay") formatComponent
-    # on (SProxy :: SProxy "yearMonthDay") formatComponent
-    # on (SProxy :: SProxy "yearMonth") formatComponent
-    # on (SProxy :: SProxy "monthDay") formatComponent
-    # on (SProxy :: SProxy "hourMinuteSecond") formatComponent
-    # on (SProxy :: SProxy "hourMinute") formatComponent
-    # on (SProxy :: SProxy "custom") formatComponent
+  comps' = case_
+    # on (SProxy :: SProxy "weekdayYearMonthDayHourMinuteSecond") (un FormatComponentRecord <<< formatComponent)
+    # on (SProxy :: SProxy "weekdayYearMonthDay") (un FormatComponentRecord <<< formatComponent)
+    # on (SProxy :: SProxy "yearMonthDay") (un FormatComponentRecord <<< formatComponent)
+    # on (SProxy :: SProxy "yearMonth") (un FormatComponentRecord <<< formatComponent)
+    # on (SProxy :: SProxy "monthDay") (un FormatComponentRecord <<< formatComponent)
+    # on (SProxy :: SProxy "hourMinuteSecond") (un FormatComponentRecord <<< formatComponent)
+    # on (SProxy :: SProxy "hourMinute") (un FormatComponentRecord <<< formatComponent)
+    # on (SProxy :: SProxy "custom") (un FormatComponentRecord <<< formatComponent)
     $ comps
 
   toUndefined :: Maybe String -> String

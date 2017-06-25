@@ -1,9 +1,10 @@
 module Data.Intl.DateTimeFormat.Class where
 
 import Data.Maybe (Maybe(..))
+import Data.Newtype (class Newtype)
 import Prelude (Unit)
 
-type FormatComponentRecord =
+newtype FormatComponentRecord = FormatComponentRecord
   { era :: Maybe String
   , weekday :: Maybe String
   , year :: Maybe String
@@ -15,8 +16,10 @@ type FormatComponentRecord =
   , timeZoneName :: Maybe String
   }
 
+derive instance newtypeFormatComponentRecord :: Newtype FormatComponentRecord _
+
 defaultComponentRecord :: FormatComponentRecord
-defaultComponentRecord =
+defaultComponentRecord = FormatComponentRecord
   { era: Nothing
   , weekday: Nothing
   , year: Nothing

@@ -19,12 +19,10 @@ module Data.Intl.DateTimeFormat.Types
 
 import Data.Foreign (F, Foreign, ForeignError(..), fail, readString)
 import Data.Foreign.Index ((!))
-import Data.Generic (class Generic)
-import Data.Intl.DateTimeFormat.Class (class FormatComponent)
-import Data.Intl.DateTimeFormat.Generic (genericFormatComponent)
-import Data.Maybe (Maybe)
-import Data.Newtype (class Newtype)
-import Prelude (class Show, bind, pure, ($), (<>), (>>=))
+import Data.Intl.DateTimeFormat.Class (class FormatComponent, FormatComponentRecord(..), defaultComponentRecord)
+import Data.Maybe (Maybe(..))
+import Data.Newtype (class Newtype, over)
+import Prelude (class Show, bind, pure, show, ($), (<>), (>>=))
 
 foreign import data Undefined :: Type
 foreign import undefined :: Undefined
@@ -112,10 +110,17 @@ newtype WeekdayYearMonthDayHourMinuteSecond = WeekdayYearMonthDayHourMinuteSecon
   , second :: NumericRep
   }
 
-derive instance genericWeekdayYearMonthDayHourMinuteSecond :: Generic WeekdayYearMonthDayHourMinuteSecond _
-
 instance formatComponentWeekdayYearMonthDayHourMinuteSecond :: FormatComponent WeekdayYearMonthDayHourMinuteSecond where
-  formatComponent = genericFormatComponent
+  formatComponent (WeekdayYearMonthDayHourMinuteSecond { weekday, year, month, day, hour, minute, second }) = over FormatComponentRecord
+    (\r -> r { weekday = Just (show weekday)
+      , year = Just (show year) 
+      , month = Just (show month) 
+      , day = Just (show day) 
+      , hour = Just (show hour) 
+      , minute = Just (show minute) 
+      , second = Just (show second) 
+      }
+    ) defaultComponentRecord
 
 newtype WeekdayYearMonthDay = WeekdayYearMonthDay
     { weekday :: StringRep
@@ -124,10 +129,15 @@ newtype WeekdayYearMonthDay = WeekdayYearMonthDay
     , day :: NumericRep
     }
 
-derive instance genericWeekdayYearMonthDay :: Generic WeekdayYearMonthDay _
-
 instance formatComponentWeekdayYearMonthDay :: FormatComponent WeekdayYearMonthDay where
-  formatComponent = genericFormatComponent
+  formatComponent (WeekdayYearMonthDay { weekday, year, month, day }) = over FormatComponentRecord
+    (\r -> r { weekday = Just (show weekday)
+      , year = Just (show year) 
+      , month = Just (show month) 
+      , day = Just (show day) 
+      }
+    ) defaultComponentRecord
+
 
 newtype YearMonthDay = YearMonthDay
   { year :: NumericRep
@@ -135,30 +145,38 @@ newtype YearMonthDay = YearMonthDay
   , day :: NumericRep
   }
 
-derive instance genericYearMonthDay :: Generic YearMonthDay _
-
 instance formatComponentYearMonthDay :: FormatComponent YearMonthDay where
-  formatComponent = genericFormatComponent
+  formatComponent (YearMonthDay { year, month, day }) = over FormatComponentRecord
+    (\r -> r { year = Just (show year)
+      , month = Just (show month)
+      , day = Just (show day)
+      }
+    ) defaultComponentRecord
+
 
 newtype YearMonth = YearMonth
   { year :: NumericRep
   , month :: MonthRep
   }
 
-derive instance genericYearMonth :: Generic YearMonth _
-
 instance formatComponentYearMonth :: FormatComponent YearMonth where
-  formatComponent = genericFormatComponent
+  formatComponent (YearMonth { year, month }) = over FormatComponentRecord
+    (\r -> r { year = Just (show year)
+      , month = Just (show month)
+      }
+    ) defaultComponentRecord
 
 newtype MonthDay = MonthDay
   { month :: MonthRep
   , day :: NumericRep
   }
 
-derive instance genericMonthDay :: Generic MonthDay _
-
 instance formatComponentMonthDay :: FormatComponent MonthDay where
-  formatComponent = genericFormatComponent
+  formatComponent (MonthDay { month, day }) = over FormatComponentRecord
+    (\r -> r { month = Just (show month)
+      , day = Just (show day)
+      }
+    ) defaultComponentRecord
 
 newtype HourMinuteSecond = HourMinuteSecond
   { hour :: NumericRep
@@ -166,17 +184,22 @@ newtype HourMinuteSecond = HourMinuteSecond
   , second :: NumericRep
   }
 
-derive instance genericHourMinuteSecond :: Generic HourMinuteSecond _
-
 instance formatComponentHourMinuteSecond :: FormatComponent HourMinuteSecond where
-  formatComponent = genericFormatComponent
+  formatComponent (HourMinuteSecond { hour, minute, second }) = over FormatComponentRecord
+    (\r -> r { hour = Just (show hour)
+      , minute = Just (show minute) 
+      , second = Just (show second) 
+      }
+    ) defaultComponentRecord
 
 newtype HourMinute = HourMinute
   { hour :: NumericRep
   , minute :: NumericRep
   }
 
-derive instance genericHourMinute :: Generic HourMinute _
-
 instance formatComponentHourMinute :: FormatComponent HourMinute where
-  formatComponent = genericFormatComponent
+  formatComponent (HourMinute { hour, minute }) = over FormatComponentRecord
+    (\r -> r { hour = Just (show hour)
+      , minute = Just (show minute) 
+      }
+    ) defaultComponentRecord
