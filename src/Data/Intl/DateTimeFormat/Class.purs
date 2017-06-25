@@ -2,7 +2,7 @@ module Data.Intl.DateTimeFormat.Class where
 
 import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype)
-import Prelude (Unit)
+import Prelude (class Eq, Unit)
 
 newtype FormatComponentRecord = FormatComponentRecord
   { era :: Maybe String
@@ -17,6 +17,8 @@ newtype FormatComponentRecord = FormatComponentRecord
   }
 
 derive instance newtypeFormatComponentRecord :: Newtype FormatComponentRecord _
+
+derive instance eqFormatComponentRecord :: Eq FormatComponentRecord
 
 defaultComponentRecord :: FormatComponentRecord
 defaultComponentRecord = FormatComponentRecord

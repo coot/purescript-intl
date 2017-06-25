@@ -22,12 +22,15 @@ import Data.Foreign.Index ((!))
 import Data.Intl.DateTimeFormat.Class (class FormatComponent, FormatComponentRecord(..), defaultComponentRecord)
 import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype, over)
-import Prelude (class Show, bind, pure, show, ($), (<>), (>>=))
+import Prelude (class Eq, class Show, bind, pure, show, ($), (<>), (>>=))
 
 foreign import data Undefined :: Type
+
 foreign import undefined :: Undefined
 
 data StringRep = Narrow | Short | Long
+
+derive instance eqStringRep :: Eq StringRep
 
 instance showStringRep :: Show StringRep where
   show Narrow = "narrow"
@@ -36,11 +39,15 @@ instance showStringRep :: Show StringRep where
 
 data NumericRep = Numeric | TwoDigit
 
+derive instance eqNumericRep :: Eq NumericRep
+
 instance showNumericRep :: Show NumericRep where
   show Numeric = "numeric"
   show TwoDigit = "2-digit"
 
 data MonthRep = MonthNumeric | MonthTwoDigit | MonthNarrow | MonthShort | MonthLong
+
+derive instance eqMonthRep :: Eq MonthRep
 
 instance showMonthRep :: Show MonthRep where
   show MonthNumeric = "numeric"
@@ -50,6 +57,8 @@ instance showMonthRep :: Show MonthRep where
   show MonthLong = "long"
 
 data TimeZoneNameRep = TimeZoneNameShort | TimeZoneNameLong
+
+derive instance eqTimeZoneNameRep :: Eq TimeZoneNameRep
 
 instance showTimeZoneRep :: Show TimeZoneNameRep where
   show TimeZoneNameShort = "short"
@@ -65,6 +74,8 @@ data FormatParts
   | Minute String
   | DayPeriod String
   | Literal String
+
+derive instance eqFormatParts :: Eq FormatParts
 
 readFormatParts :: Foreign -> F FormatParts
 readFormatParts val = do
@@ -100,6 +111,8 @@ newtype ResolvedOptions = ResolvedOptions
 
 derive instance newtypeResolvedOptions :: Newtype ResolvedOptions _
 
+derive instance eqResolvedOptions :: Eq ResolvedOptions
+
 newtype WeekdayYearMonthDayHourMinuteSecond = WeekdayYearMonthDayHourMinuteSecond
   { weekday :: StringRep
   , year :: NumericRep
@@ -111,6 +124,8 @@ newtype WeekdayYearMonthDayHourMinuteSecond = WeekdayYearMonthDayHourMinuteSecon
   }
 
 derive instance newtypeWeekdayYearMonthDayHourMinuteSecond :: Newtype WeekdayYearMonthDayHourMinuteSecond _
+
+derive instance eqWeekdayYearMonthDayHourMinuteSecond :: Eq WeekdayYearMonthDayHourMinuteSecond
 
 instance formatComponentWeekdayYearMonthDayHourMinuteSecond :: FormatComponent WeekdayYearMonthDayHourMinuteSecond where
   formatComponent (WeekdayYearMonthDayHourMinuteSecond { weekday, year, month, day, hour, minute, second }) = over FormatComponentRecord
@@ -133,6 +148,8 @@ newtype WeekdayYearMonthDay = WeekdayYearMonthDay
 
 derive instance newtypeWeekdayYearMonthDay :: Newtype WeekdayYearMonthDay _
 
+derive instance eqWeekdayYearMonthDay :: Eq WeekdayYearMonthDay
+
 instance formatComponentWeekdayYearMonthDay :: FormatComponent WeekdayYearMonthDay where
   formatComponent (WeekdayYearMonthDay { weekday, year, month, day }) = over FormatComponentRecord
     (\r -> r { weekday = Just (show weekday)
@@ -151,6 +168,8 @@ newtype YearMonthDay = YearMonthDay
 
 derive instance newtypeYearMonthDay :: Newtype YearMonthDay _
 
+derive instance eqYearMonthDay :: Eq YearMonthDay
+
 instance formatComponentYearMonthDay :: FormatComponent YearMonthDay where
   formatComponent (YearMonthDay { year, month, day }) = over FormatComponentRecord
     (\r -> r { year = Just (show year)
@@ -167,6 +186,8 @@ newtype YearMonth = YearMonth
 
 derive instance newtypeYearMonth :: Newtype YearMonth _
 
+derive instance eqYearMonth :: Eq YearMonth
+
 instance formatComponentYearMonth :: FormatComponent YearMonth where
   formatComponent (YearMonth { year, month }) = over FormatComponentRecord
     (\r -> r { year = Just (show year)
@@ -180,6 +201,8 @@ newtype MonthDay = MonthDay
   }
 
 derive instance newtypeMonthDay :: Newtype MonthDay _
+
+derive instance eqMonthDay :: Eq MonthDay
 
 instance formatComponentMonthDay :: FormatComponent MonthDay where
   formatComponent (MonthDay { month, day }) = over FormatComponentRecord
@@ -196,6 +219,8 @@ newtype HourMinuteSecond = HourMinuteSecond
 
 derive instance newtypeHourMinuteSecond :: Newtype HourMinuteSecond _
 
+derive instance eqHourMinuteSecond :: Eq HourMinuteSecond
+
 instance formatComponentHourMinuteSecond :: FormatComponent HourMinuteSecond where
   formatComponent (HourMinuteSecond { hour, minute, second }) = over FormatComponentRecord
     (\r -> r { hour = Just (show hour)
@@ -210,6 +235,8 @@ newtype HourMinute = HourMinute
   }
 
 derive instance newtypeHourMinute :: Newtype HourMinute _
+
+derive instance eqHourMinute :: Eq HourMinute
 
 instance formatComponentHourMinute :: FormatComponent HourMinute where
   formatComponent (HourMinute { hour, minute }) = over FormatComponentRecord
