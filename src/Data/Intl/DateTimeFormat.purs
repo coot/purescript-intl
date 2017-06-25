@@ -120,15 +120,15 @@ formatDateTimeOptions (DateTimeFormatOptions opts comps) = merge opts' (compsCoe
           , hour12: fromMaybe (unsafeCoerce undefined) opts.hour12
           , formatMatcher: maybe undefinedString show opts.formatMatcher
           }
-  comps' = case_
-    # on (SProxy :: SProxy "weekdayYearMonthDayHourMinuteSecond") (un FormatComponentRecord <<< formatComponent)
-    # on (SProxy :: SProxy "weekdayYearMonthDay") (un FormatComponentRecord <<< formatComponent)
-    # on (SProxy :: SProxy "yearMonthDay") (un FormatComponentRecord <<< formatComponent)
-    # on (SProxy :: SProxy "yearMonth") (un FormatComponentRecord <<< formatComponent)
-    # on (SProxy :: SProxy "monthDay") (un FormatComponentRecord <<< formatComponent)
-    # on (SProxy :: SProxy "hourMinuteSecond") (un FormatComponentRecord <<< formatComponent)
-    # on (SProxy :: SProxy "hourMinute") (un FormatComponentRecord <<< formatComponent)
-    # on (SProxy :: SProxy "custom") (un FormatComponentRecord <<< formatComponent)
+  comps' = un FormatComponentRecord $ case_
+    # on (SProxy :: SProxy "weekdayYearMonthDayHourMinuteSecond") formatComponent
+    # on (SProxy :: SProxy "weekdayYearMonthDay") formatComponent
+    # on (SProxy :: SProxy "yearMonthDay") formatComponent
+    # on (SProxy :: SProxy "yearMonth") formatComponent
+    # on (SProxy :: SProxy "monthDay") formatComponent
+    # on (SProxy :: SProxy "hourMinuteSecond") formatComponent
+    # on (SProxy :: SProxy "hourMinute") formatComponent
+    # on (SProxy :: SProxy "custom") formatComponent
     $ comps
 
   toUndefined :: Maybe String -> String
