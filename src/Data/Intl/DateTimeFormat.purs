@@ -1,4 +1,4 @@
-module Data.Intl.DateTimeFormat 
+module Data.Intl.DateTimeFormat
   ( LocalesOption
   , LocaleMatcher(..)
   , TimeZone(..)
@@ -196,6 +196,85 @@ foreign import createDateTimeFormatImpl
       DateTimeFormatOptions_
       (F DateTimeFormat)
 
+-- | Examples
+-- | ``` purescript
+-- | import Data.Variant (inj)
+-- |
+-- | fmtHourMinute = createDateTimeFormat locale opts
+-- |    where
+-- |      locale = inj (SProxy :: SProxy "locale") "en-GB"
+-- |      opts = (DateTimeFormatOptions
+-- |                { localeMatcher: Nothing
+-- |                , timeZone: (Just (TimeZone "Europe/London"))
+-- |                , hour12: Just false
+-- |                , formatMatcher: Nothing
+-- |                , inj (SProxy :: SProxy "hourMinute")
+-- |                      (HourMinute {hour: TwoDigit, minute: TwoDigit})
+-- |                }
+-- |
+-- |
+-- | fmtDate = createDateTimeFormat locale opts
+-- |   wher
+-- |     locale = inj (SProxy :: SProxy "locale") "en-GB"
+-- |     opts :: DateTimeFormatOptions'
+-- |     opts =
+-- |       (DateTimeFormatOptions
+-- |         { localeMatcher: Nothing
+-- |         , timeZone: (Just (TimeZone "Europe/London"))
+-- |         , hour12: Just true
+-- |         , formatMatcher: Nothing
+-- |         }
+-- |         (inj
+-- |           (SProxy :: SProxy "weekdayYearMonthDayHourMinuteSecond")
+-- |           (WeekdayYearMonthDayHourMinuteSecond
+-- |             { weekday: Short
+-- |             , year: Numeric
+-- |             , month: MonthLong
+-- |             , day: Numeric
+-- |             , hour: Numeric
+-- |             , minute: Numeric
+-- |             , second: Numeric
+-- |             }
+-- |           )
+-- |         )
+-- |       )
+-- | ```
+-- | You have predifined types: `WeekdayYearMonthDayHourMinuteSecond`,
+-- | `WeekdayYearMonthDay`, `YearMonthDay`, `YearMonth`, `MonthDay`,
+-- | `HourMinuteSecond`, `HourMinute`.  But you can also provide your own by
+-- | implementing `FormatComponent` class (or by deriving it), e.g.
+-- | ``` purescript
+-- | newtype EraYear = EraYear
+-- |   { era :: StringRep
+-- |   , year :: NumericRep
+-- |   }
+-- |
+-- | derive instance genericEraYear :: Generic EraYear _
+-- |
+-- | instance formatComponentEraYear :: FormatComponent EraYear where
+-- |   formatComponent = genericFormatComponent
+-- |
+-- | fmtEraYear = createDateTimeFormat locales opts
+-- |   where
+-- |     locale = inj (SProxy :: SProxy "locale") "en-GB"
+-- |     opts :: DateTimeFormatOptions EraYear
+-- |     opts =
+-- |       (DateTimeFormatOptions
+-- |         { localeMatcher: Nothing
+-- |         , timeZone: (Just (TimeZone "Europe/London"))
+-- |         , hour12: Just true
+-- |         , formatMatcher: Nothing
+-- |         }
+-- |         (inj
+-- |           (SProxy :: SProxy "custom")
+-- |           (EraYear
+-- |             { era: Long
+-- |             , year: Numeric
+-- |             }
+-- |           )
+-- |         )
+-- |       )
+-- | ```
 createDateTimeFormat
   :: forall a
    .(FormatComponent a)
@@ -209,6 +288,12 @@ createDateTimeFormat ls opts =
     (toLocale ls)
     (formatDateTimeOptions opts)
 
+-- | Examples
+-- | ``` purescript
+-- | formatJSDate fmtHourMinute date -- "12:00"
+-- | formatJSDate fmtDate            -- "Tue, January 2, 2018, 12:00:00 PM"
+-- | formatJSDate fmtEraYear         -- "2018 Anno Domini"
+-- | ```
 foreign import formatJSDate :: DateTimeFormat -> JSDate -> String
 
 foreign import supportedLocalesOfImpl
@@ -217,7 +302,7 @@ foreign import supportedLocalesOfImpl
       (Array String -> Either String (Array String))
       (Array String)
       (Either String (Array String))
- 
+
 foreign import formatToPartsImpl :: DateTimeFormat -> JSDate -> Array Foreign
 
 formatToParts :: DateTimeFormat -> JSDate -> F (Array FormatParts)
