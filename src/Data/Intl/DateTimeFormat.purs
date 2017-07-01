@@ -200,6 +200,7 @@ foreign import createDateTimeFormatImpl
 -- | ``` purescript
 -- | import Data.Variant (inj)
 -- |
+-- | fmtHourMinute = F DateTimeFormat
 -- | fmtHourMinute = createDateTimeFormat locale opts
 -- |    where
 -- |      locale = inj (SProxy :: SProxy "locale") "en-GB"
@@ -213,6 +214,7 @@ foreign import createDateTimeFormatImpl
 -- |                     (HourMinute {hour: TwoDigit, minute: TwoDigit}))
 -- |
 -- |
+-- | fmtDate :: F DateTimeFormat
 -- | fmtDate = createDateTimeFormat locale opts
 -- |   wher
 -- |     locale = inj (SProxy :: SProxy "locale") "en-GB"
@@ -254,6 +256,7 @@ foreign import createDateTimeFormatImpl
 -- | instance formatComponentEraYear :: FormatComponent EraYear where
 -- |   formatComponent = genericFormatComponent
 -- |
+-- | fmtEraYear :: F DateTimeFormat
 -- | fmtEraYear = createDateTimeFormat locales opts
 -- |   where
 -- |     locale = inj (SProxy :: SProxy "locale") "en-GB"
@@ -290,9 +293,9 @@ createDateTimeFormat ls opts =
 
 -- | Examples
 -- | ``` purescript
--- | formatJSDate fmtHourMinute date -- "12:00"
--- | formatJSDate fmtDate            -- "Tue, January 2, 2018, 12:00:00 PM"
--- | formatJSDate fmtEraYear         -- "2018 Anno Domini"
+-- | formatJSDate (either (const "") id $ runExcept fmtHourMinute) date -- "12:00"
+-- | formatJSDate (either (const "") id $ fmtDate) date                 -- "Tue, January 2, 2018, 12:00:00 PM"
+-- | formatJSDate (either (const "") id $ fmtEraYear) date              -- "2018 Anno Domini"
 -- | ```
 foreign import formatJSDate :: DateTimeFormat -> JSDate -> String
 
