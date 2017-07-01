@@ -208,9 +208,9 @@ foreign import createDateTimeFormatImpl
 -- |                , timeZone: (Just (TimeZone "Europe/London"))
 -- |                , hour12: Just false
 -- |                , formatMatcher: Nothing
--- |                , inj (SProxy :: SProxy "hourMinute")
--- |                      (HourMinute {hour: TwoDigit, minute: TwoDigit})
 -- |                }
+-- |                (inj (SProxy :: SProxy "hourMinute")
+-- |                     (HourMinute {hour: TwoDigit, minute: TwoDigit}))
 -- |
 -- |
 -- | fmtDate = createDateTimeFormat locale opts
